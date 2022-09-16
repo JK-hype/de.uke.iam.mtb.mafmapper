@@ -1,0 +1,4 @@
+server.port=8092
+
+# Url to the mapped maf file to
+kcUrl=localhost:8083/
