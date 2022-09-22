@@ -12,7 +12,7 @@ public class MiracumMafToKcMafMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiracumMafToKcMafMapper.class);
 
     /*
-     * Codons and RefSeq can be null
+     * codons, proteinPosition and refSeq can be null
      */
     public static KcMafDto mapToKcMaf(MiracumMafDto miracumMafDto) {
         KcMafDto kcMafDto = new KcMafDto();
@@ -31,7 +31,7 @@ public class MiracumMafToKcMafMapper {
         kcMafDto.setTumorSeqAllele1(miracumMafDto.getTumorSeqAllele1());
         kcMafDto.setTumorSeqAllele2(miracumMafDto.getTumorSeqAllele2());
         kcMafDto.setVariantOnGene(miracumMafDto.getTxChange().split("c.")[1]);
-        kcMafDto.setVariantOnProtein(miracumMafDto.getHgvspShort().split("p.")[1]);
+        kcMafDto.setVariantOnProtein(miracumMafDto.getAminoAcidChange().split("p.")[1]);
         kcMafDto.setDbsnpRs(miracumMafDto.getDbsnpRs());
         try {
             kcMafDto.setNDepth(
@@ -45,7 +45,6 @@ public class MiracumMafToKcMafMapper {
         } catch (NumberFormatException e) {
             LOGGER.info("Could not map tDepth");
         }
-        kcMafDto.setProteinPosition(miracumMafDto.getAminoAcidChange());
         kcMafDto.setStrand(miracumMafDto.getStrand());
         kcMafDto.setConsequence(miracumMafDto.getVariantClassification());
         return kcMafDto;
