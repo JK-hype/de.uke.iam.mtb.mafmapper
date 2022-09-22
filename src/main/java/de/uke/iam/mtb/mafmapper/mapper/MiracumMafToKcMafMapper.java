@@ -1,10 +1,15 @@
 package de.uke.iam.mtb.mafmapper.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uke.iam.mtb.dto.kc.KcBiosampleDto;
 import de.uke.iam.mtb.dto.kc.KcMafDto;
 import de.uke.iam.mtb.dto.miracum.MiracumMafDto;
 
 public class MiracumMafToKcMafMapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MiracumMafToKcMafMapper.class);
 
     /*
      * Codons and RefSeq can be null
@@ -28,10 +33,18 @@ public class MiracumMafToKcMafMapper {
         kcMafDto.setVariantOnGene(miracumMafDto.getTxChange().split("c.")[1]);
         kcMafDto.setVariantOnProtein(miracumMafDto.getHgvspShort().split("p.")[1]);
         kcMafDto.setDbsnpRs(miracumMafDto.getDbsnpRs());
-        kcMafDto.setNDepth(
-                Integer.parseInt(miracumMafDto.getAltCountN()));
-        kcMafDto.setTDepth(
-                Integer.parseInt(miracumMafDto.getAltCountT()));
+        try {
+            kcMafDto.setNDepth(
+                    Integer.parseInt(miracumMafDto.getAltCountN()));
+        } catch (NumberFormatException e) {
+            LOGGER.info("Could not map nDepth");
+        }
+        try {
+            kcMafDto.setTDepth(
+                    Integer.parseInt(miracumMafDto.getAltCountT()));
+        } catch (NumberFormatException e) {
+            LOGGER.info("Could not map tDepth");
+        }
         kcMafDto.setProteinPosition(miracumMafDto.getAminoAcidChange());
         kcMafDto.setStrand(miracumMafDto.getStrand());
         kcMafDto.setConsequence(miracumMafDto.getVariantClassification());

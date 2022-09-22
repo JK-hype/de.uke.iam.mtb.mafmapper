@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import de.uke.iam.mtb.mafmapper.mapper.MiracumMafToKcMafMapper;
 
 @Service
 public class MafMapperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MafMapperService.class);
 
     private final String kcUrl;
 
@@ -43,9 +47,14 @@ public class MafMapperService {
         String mafJson = GsonHelper.get().getNewGson().toJson(kcMafDtos);
         String biosampleJson = GsonHelper.get().getNewGson().toJson(kcBiosampleDtos);
 
+        String mafUrl = kcUrl + "/mafs";
+        String biosampleUrl = kcUrl + "/biosamples";
+
         try {
-            post(new URL(kcUrl + "/mafs"), mafJson);
-            post(new URL(kcUrl + "/biosamples"), biosampleJson);
+            post(new URL(mafUrl), mafJson);
+            LOGGER.info("Sent " + mafJson + " to " + mafUrl);
+            post(new URL(biosampleUrl), biosampleJson);
+            LOGGER.info("Sent " + biosampleJson + " to " + biosampleUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
