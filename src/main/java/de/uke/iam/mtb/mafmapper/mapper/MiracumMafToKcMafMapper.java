@@ -24,30 +24,46 @@ public class MiracumMafToKcMafMapper {
                 miracumMafDto.getVariantType().replace("SNP", "SNV").replace("DEL", "INDEL").toUpperCase());
         kcMafDto.setChromosome(miracumMafDto.getChromosome());
         kcMafDto.setVariantType(miracumMafDto.getVariantType());
-        kcMafDto.setStart(Long.valueOf(miracumMafDto.getStartPosition()));
-        kcMafDto.setEnd(Long.valueOf(miracumMafDto.getEndPosition()));
+        try {
+            kcMafDto.setStart(Long.valueOf(miracumMafDto.getStartPosition()));
+        } catch (NumberFormatException e) {
+            LOGGER.warn("Could not map startPosition");
+        }
+        try {
+            kcMafDto.setEnd(Long.valueOf(miracumMafDto.getEndPosition()));
+        } catch (NumberFormatException e) {
+            LOGGER.warn("Could not map endPosition");
+        }
         kcMafDto.setRefGenome(miracumMafDto.getNcbiBuild());
         kcMafDto.setRefAllele(miracumMafDto.getReferenceAllele());
         kcMafDto.setTumorSeqAllele1(miracumMafDto.getTumorSeqAllele1());
         kcMafDto.setTumorSeqAllele2(miracumMafDto.getTumorSeqAllele2());
-        kcMafDto.setVariantOnGene(miracumMafDto.getTxChange().split("c.")[1]);
-        kcMafDto.setVariantOnProtein(miracumMafDto.getAminoAcidChange().split("p.")[1]);
+        kcMafDto.setVariantOnGene(indexOutOfBoundCheck(miracumMafDto.getTxChange().split("c.")));
+        kcMafDto.setVariantOnProtein(indexOutOfBoundCheck(miracumMafDto.getAminoAcidChange().split("p.")));
         kcMafDto.setDbsnpRs(miracumMafDto.getDbsnpRs());
         try {
             kcMafDto.setNDepth(
                     Integer.parseInt(miracumMafDto.getAltCountN()));
         } catch (NumberFormatException e) {
-            LOGGER.info("Could not map nDepth");
+            LOGGER.warn("Could not map nDepth");
         }
         try {
             kcMafDto.setTDepth(
                     Integer.parseInt(miracumMafDto.getAltCountT()));
         } catch (NumberFormatException e) {
-            LOGGER.info("Could not map tDepth");
+            LOGGER.warn("Could not map tDepth");
         }
         kcMafDto.setStrand(miracumMafDto.getStrand());
         kcMafDto.setConsequence(miracumMafDto.getVariantClassification());
         return kcMafDto;
+    }
+
+    private static String indexOutOfBoundCheck(String[] split) {
+        if (split.length > 1) {
+            return split[1];
+        } else {
+            return "";
+        }
     }
 
     public static KcBiosampleDto mapToKcBiosample(MiracumMafDto miracumMafDto) {
